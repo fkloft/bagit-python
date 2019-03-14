@@ -211,7 +211,8 @@ def make_bag(
             # FIXME: if we calculate full paths we won't need to deal with changing directories
             os.chdir(bag_dir)
             cwd = os.getcwd()
-            temp_data = tempfile.mkdtemp(dir=cwd)
+            temp_data = tempfile.mktemp(dir=cwd)
+            os.mkdir(temp_data)
 
             for f in os.listdir("."):
                 if os.path.abspath(f) == temp_data:
@@ -228,10 +229,6 @@ def make_bag(
                 {"source": temp_data, "destination": "data"},
             )
             os.rename(temp_data, "data")
-
-            # permissions for the payload directory should match those of the
-            # original directory
-            os.chmod("data", os.stat(cwd).st_mode)
 
             total_bytes, total_files = make_manifests(
                 "data", processes, algorithms=checksums, encoding=encoding
